@@ -7,6 +7,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -23,6 +24,29 @@ public class LoginTrelloTest {
         wd.navigate().to("https://trello.com/");
 
     }
+
+    @BeforeMethod
+    public void ensurePreconditions(){
+        if(isAvatarPresent()){
+            logout();
+        }
+
+    }
+
+    public void logout() {
+        clickOnAvatar();
+        clickLogOut();
+    }
+
+    public void clickLogOut() {
+        click(By.xpath("//button[@data-test-id='header-member-menu-logout']"));
+    }
+
+    public void clickOnAvatar() {
+        click(By.xpath
+                ("//button[@data-test-id='header-member-menu-button']"));
+    }
+
     @Test
     public void loginAtlassianAccPositiveTest() throws InterruptedException {
         login("dumbalien86@gmail.com", "TrelloLO2020");
@@ -30,6 +54,20 @@ public class LoginTrelloTest {
         Assert.assertTrue(isAvatarPresent());;
 
 
+    }
+
+    @Test
+    public void negativeLoginAtlassianAccPositiveTest() throws InterruptedException {
+        login("dumbalien86@gmail.com", "TrelloLO");
+
+        Assert.assertTrue(isLoginErrorPresent());
+        Assert.assertFalse(isAvatarPresent());
+
+
+    }
+
+    private boolean isLoginErrorPresent() {
+        return isElementPresent(By.cssSelector("#login-error"));
     }
 
     public void login(String email, String password) throws InterruptedException {
