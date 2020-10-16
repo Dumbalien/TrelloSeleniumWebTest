@@ -4,6 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -24,23 +25,50 @@ public class LoginTrelloTest {
     }
     @Test
     public void loginAtlassianAccPositiveTest() throws InterruptedException {
-        wd.findElement(By.cssSelector("[href='/login']")).click();
+        login("dumbalien86@gmail.com", "TrelloLO2020");
 
-        wd.findElement(By.name("user")).click();
-        wd.findElement(By.name("user")).clear();
-        wd.findElement(By.name("user")).sendKeys("dumbalien86@gmail.com" + Keys.ENTER);
-
-        Thread.sleep(10000);
-
-        wd.findElement(By.id("login")).click();
-        Thread.sleep(10000);
-
-        wd.findElement(By.id("password")).click();
-        wd.findElement(By.id("password")).clear();
-        wd.findElement(By.id("password")).sendKeys("TrelloLO2020" + Keys.ENTER);
+        Assert.assertTrue(isAvatarPresent());;
 
 
     }
+
+    public void login(String email, String password) throws InterruptedException {
+        click(By.cssSelector("[href='/login']"));
+        type(By.name("user"), email + Keys.ENTER);
+        Thread.sleep(10000);
+
+        click(By.id("login"));
+        Thread.sleep(10000);
+
+        type(By.id("password"), password + Keys.ENTER);
+        click(By.id("login-submit"));
+    }
+
+    public void type(By locator, String text) {
+        click(locator);
+        wd.findElement(locator).clear();
+        wd.findElement(locator).sendKeys(text);
+    }
+
+    public void click(By locator){
+        wd.findElement(locator).click();
+
+    }
+
+
+
+    public boolean isAvatarPresent(){
+
+        return isElementPresent(By.xpath
+                ("//button[@data-test-id='header-member-menu-button']"));
+
+    }
+
+    public boolean isElementPresent(By locator) {
+
+        return wd.findElements(locator).size() > 0;
+    }
+
     @AfterClass(enabled = false)
     public void tearDown(){
         wd.quit();
